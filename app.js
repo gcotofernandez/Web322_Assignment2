@@ -1,82 +1,72 @@
 const express = require('express');
-const exphbs  = require('express-handlebars');
-const cookieParser = require('cookie-parser');
-const clientSessions = require('client-sessions');
+const exphbs = require('express-handlebars');
 const path = require('path');
 const fs = require('fs');
-const randomstring = require('randomstring');
 
 const app = express();
 
-const constants = require('./constants');
-const configs = require('./configs');
+const { appConfigs } = require('./configs.js');
+const { appConstants } = require('./constants.js');
 
-// Setting up Handlebars as view engine
-const handlebars = exphbs.create({ 
-    extname: '.hbs', 
-    defaultLayout: 'main', 
-    helpers: {
-        isSelected: function(value, test) {
-            return value == test ? 'selected' : '';
-        }
-    }
-});
-app.engine('.hbs', handlebars.engine);
-app.set('view engine', '.hbs');
-
-// Setting up middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser());
-app.use(clientSessions({
-    cookieName: 'session',
-    secret: randomstring.generate(),
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
-    httpOnly: true,
-    secure: true,
-    ephemeral: true
+// Setup view engine
+app.engine('.hbs', exphbs({
+  defaultLayout: 'main',
+  extname: '.hbs',
+  layoutsDir: path.join(__dirname, 'views/layouts')
 }));
+app.set('view engine', '.hbs');
+app.set('views', path.join(__dirname, 'views'));
 
-// Routing
+// Setup static directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Homepage route
 app.get('/', (req, res) => {
-    res.redirect('/login');
+  let selectedImage = {
+    value: 'Default',
+    name: 'Default',
+    path: 'images/smile.jpg'
+  };
+  if (req.query.image) {
+    selectedImage = appConstants.images.find(image => image.value === req.query.image) || selectedImage;
+  }
+  res.render('gallery', {
+    selectedImage,
+    appConstants
+  });
 });
 
+// Login route
 app.get('/login', (req, res) => {
-    res.render('login', { layout: 'login' });
+  res.render('login');
 });
 
+// Login form submission route
 app.post('/login', (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    const userDB = JSON.parse(fs.readFileSync(constants.USER_DATA_FILE));
-
-    if (username in userDB) {
-        if (userDB[username] === password) {
-            req.session.user = username;
-            res.redirect('/gallery');
-        } else {
-            res.render('login', { layout: 'login', message: 'Invalid password.' });
-        }
-    } else {
-        res.render('login', { layout: 'login', message: 'Not a registered username.' });
+  const { username, password } = req.body;
+  fs.readFile('users.json', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Internal server error');
     }
+    const users = JSON.parse(data);
+    if (users[username] === password) {
+      req.session.loggedIn = true;
+      req.session.username = username;
+      return res.redirect('/');
+    }
+    res.render('login', { message: 'Invalid username or password' });
+  });
 });
 
-app.get('/gallery', (req, res) => {
-    if (!req.session.user) {
-        res.redirect('/login');
-    } else {
-        const imageList = fs.readFileSync(constants.IMAGE_LIST_FILE, 'utf-8').split('\n').map(line => line.trim());
-        res.render('gallery', { username: req.session.user, images: imageList });
-    }
-});
-
+// Logout route
 app.get('/logout', (req, res) => {
-    req.session.reset();
-    res.redirect('/login');
+  req.session.loggedIn = false;
+  req.session.username = null;
+  res.redirect('/');
 });
 
-// Server startup
-app.listen(configs.PORT, () => console.log(`Server started on port ${configs.PORT}`));
+// Start server
+app.listen(appConfigs.port, () => {
+  console.log(`Server started on port ${appConfigs.port}`);
+});
