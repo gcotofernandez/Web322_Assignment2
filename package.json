@@ -1,0 +1,17 @@
+{
+  "name": "final",
+  "version": "1.0.0",
+  "description": "Web322 Assignment 2",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gabriela Coto Fernandez",
+  "license": "ISC",
+  "dependencies": {
+    "express-handlebars": "^7.0.2",
+    "linebyline": "^1.3.0",
+    "randomstring": "^1.2.3",
+    "readlines": "^0.2.0"
+  }
+}

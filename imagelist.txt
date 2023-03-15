@@ -1,0 +1,10 @@
+cat.jpg
+strawberry.jpg
+butterfly.jpg
+flowers.jpg
+bike.jpg
+sloth.jpg
+lemur.jpg
+mug.jpg
+couch.jpg
+tree.jpg

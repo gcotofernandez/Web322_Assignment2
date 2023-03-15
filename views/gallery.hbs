@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web322 - Assignment 2</title>
+    <link rel="stylesheet" href="/CSS/gallery.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="title">Web322 - Assignment 2</h1>
+    </header>
+
+    <div class="contents-container">
+        <form class="references-container" method="get" action="/">
+            <h2 class="title">Images</h2>
+            {{#each images}}
+            <div class="reference-container">
+                <input class="reference" id="image-{{@index}}" name="image" type="radio" value="{{this}}">
+                <label class="reference-label" for="image-{{@index}}">{{this}}</label>
+            </div>
+            <div class="spacer"></div>
+            {{/each}}
+            <button class="reference-submit" type="submit">Submit</button>
+        </form>
+        <div class="image-container">
+            {{#if image}}
+            <img class="image" src="{{image.path}}" alt="{{image.name}}">
+            <p class="image-label">{{image.name}}</p>
+            {{else}}
+            <p class="image-label">NO IMAGE SELECTED</p>
+            {{/if}}
+        </div>
+    </div>
+</body>
+</html>
