@@ -1,10 +1,9 @@
-const {engine} = require('express-handlebars')
+const hbs = require('hbs');
 
 const appConfigs = {
     port: 3000,
     //
-    engine: engine({
-    })
+    engine: hbs
 }
 
 module.exports = {
