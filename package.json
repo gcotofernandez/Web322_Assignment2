@@ -9,9 +9,19 @@
   "author": "Gabriela Coto Fernandez",
   "license": "ISC",
   "dependencies": {
+    "client-sessions": "^0.8.0",
     "express-handlebars": "^7.0.2",
     "linebyline": "^1.3.0",
     "randomstring": "^1.2.3",
     "readlines": "^0.2.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gcotofernandez/Web322_Assignment2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gcotofernandez/Web322_Assignment2/issues"
+  },
+  "homepage": "https://github.com/gcotofernandez/Web322_Assignment2#readme"
 }
